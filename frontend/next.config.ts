@@ -1,3 +1,4 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -10,6 +11,16 @@ const nextConfig: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_BACKEND_API: process.env.NEXT_PUBLIC_BACKEND_API || "http://localhost:8000",
+  },
+  outputFileTracingRoot: path.join(__dirname, ".."),
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: /(^|[\\/])(?:node_modules|\.git|\.next|pagefile\.sys|hiberfil\.sys|swapfile\.sys|DumpStack\.log\.tmp|System Volume Information)(?:[\\/]|$)/i,
+      };
+    }
+    return config;
   },
 };
 

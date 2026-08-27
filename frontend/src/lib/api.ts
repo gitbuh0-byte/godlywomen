@@ -36,9 +36,9 @@ export async function apiCall(
     const response = await fetch(url, config);
     
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-      console.error(`API error at ${url}:`, error);
-      throw new Error(error.error || `HTTP ${response.status}`);
+      const error = await response.json().catch(() => null);
+      const message = error?.error || `HTTP ${response.status} from ${url}`;
+      throw new Error(message);
     }
 
     return response.json();
@@ -117,5 +117,5 @@ export async function fetchMessages(token: string) {
 }
 
 export async function sendMessage(receiverId: number, content: string, token: string) {
-  return apiCall("/api/messages", "POST", { receiver_id: receiverId, content }, token);
+  return apiCall("/api/messages", "POST", { receiverId, content }, token);
 }

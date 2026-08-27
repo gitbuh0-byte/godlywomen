@@ -17,7 +17,7 @@ export function Navigation() {
     <nav className="sticky top-0 z-50 border-b border-[#eadfe4] bg-[#fffdfb]/95 backdrop-blur">
       <div className="container-custom flex h-[72px] items-center justify-between">
         <Link href="/" className="font-serif text-xl font-bold tracking-tight text-[#211c22]">
-          G<span className="text-[#ec174b]">♥</span>RERA
+          Godlywomen
         </Link>
 
         <div className="hidden items-center gap-7 md:flex">
