@@ -5,8 +5,8 @@ import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
-  title: "Forera | Find your people",
-  description: "A trusted place to discover genuine profiles, honest reviews, and community.",
+  title: "Godly Women | The Sisterhood's Marketplace",
+  description: "Godly Women is a trusted sisterhood for genuine profiles, honest reviews, and community.",
   keywords: ["faith", "inspiration", "community", "spirituality", "women"],
 };
 

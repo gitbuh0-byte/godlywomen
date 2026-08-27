@@ -2,20 +2,20 @@ type LocalRecord = Record<string, any>;
 
 const seeds: Record<string, LocalRecord[]> = {
   articles: [
-    { id: "local-1", title: "Finding your people in a busy city", slug: "finding-your-people", excerpt: "Small, genuine connections make a community feel like home.", author: "Forera Community", createdAt: "2026-08-20T10:00:00.000Z" },
+    { id: "local-1", title: "Finding your people in a busy city", slug: "finding-your-people", excerpt: "Small, genuine connections make a community feel like home.", author: "Godly Women Sisterhood", createdAt: "2026-08-20T10:00:00.000Z" },
     { id: "local-2", title: "A local guide to showing up well", slug: "showing-up-well", excerpt: "A few thoughtful habits can make every introduction more comfortable.", author: "Mia Clark", createdAt: "2026-08-18T10:00:00.000Z" },
   ],
   prayers: [
-    { id: "local-1", title: "A prayer for new beginnings", content: "For courage, kindness, and the right people along the way.", author: "Forera Community", createdAt: "2026-08-19T10:00:00.000Z" },
+    { id: "local-1", title: "A prayer for new beginnings", content: "For courage, kindness, and the right people along the way.", author: "Godly Women Sisterhood", createdAt: "2026-08-19T10:00:00.000Z" },
   ],
   marketplace: [
-    { id: "local-1", title: "Valencia welcome guide", description: "A curated local guide from our community.", price: 0, seller: "Forera Community", createdAt: "2026-08-17T10:00:00.000Z" },
+    { id: "local-1", title: "Valencia welcome guide", description: "A curated local guide from the Godly Women sisterhood.", price: 0, seller: "Godly Women Sisterhood", createdAt: "2026-08-17T10:00:00.000Z" },
   ],
   messages: [],
 };
 
 function storageKey(collection: string) {
-  return `forera:${collection}`;
+  return `godly-women:${collection}`;
 }
 
 function read(collection: string): LocalRecord[] {
