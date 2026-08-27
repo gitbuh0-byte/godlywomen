@@ -1,14 +1,90 @@
+/* stylelint-disable at-rule-no-unknown */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+/* stylelint-enable at-rule-no-unknown */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
 
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #f9f7f4;
-  color: #333;
+  background: #f8f7f5;
+  color: #211c22;
+  font-family: 'DM Sans', sans-serif;
 }
 
 * {
@@ -22,13 +98,62 @@ a {
   text-decoration: none;
 }
 
-.gradient-text {
-  background: linear-gradient(135deg, #dc143c 0%, #6B5B95 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Prose styling for article content */
+.prose {
+  @apply text-gray-800;
+}
+
+.prose p {
+  @apply mb-6 leading-relaxed;
+}
+
+.prose h2 {
+  @apply font-serif text-2xl font-bold text-black mt-8 mb-4;
+}
+
+.prose h3 {
+  @apply font-serif text-xl font-bold text-black mt-6 mb-3;
+}
+
+.prose strong {
+  @apply font-semibold text-black;
+}
+
+.prose ul, .prose ol {
+  @apply my-6 ml-6 space-y-2;
+}
+
+.prose li {
+  @apply text-gray-700;
+}
+
+.prose a {
+  @apply text-rose-600 hover:text-rose-700 underline transition;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-rose-500 pl-4 italic text-gray-600 my-6;
+}
+
+@layer components {
+  .font-serif {
+      font-family: 'Libre Baskerville', Georgia, serif;
+  }
 }
 
 .container-custom {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply max-w-7xl mx-auto px-5 sm:px-8;
+}
+
+.editorial-grid {
+  background-image: linear-gradient(rgba(117, 36, 83, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(117, 36, 83, .04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.pink-button {
+  @apply inline-flex items-center justify-center rounded-full bg-[#ec174b] px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-white transition hover:bg-[#c7113d] hover:-translate-y-0.5;
+}
+
+.outline-button {
+  @apply inline-flex items-center justify-center rounded-full border border-[#ec174b] px-5 py-2.5 text-xs font-bold uppercase tracking-wide text-[#ec174b] transition hover:bg-[#ec174b] hover:text-white;
 }

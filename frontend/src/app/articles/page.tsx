@@ -40,43 +40,48 @@ export default function ArticlesPage() {
 
   return (
     <main className="flex-1">
-      <section className="bg-gradient-to-r from-[#dc143c] to-[#6B5B95] text-white py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-2">Articles</h1>
-          <p className="opacity-90">Read inspiring articles from our community</p>
+      <section className="bg-white border-b border-gray-200 py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="font-serif text-5xl font-bold mb-2 text-black">Stories</h1>
+          <p className="text-gray-600 font-light">Read inspiring stories from our community</p>
         </div>
       </section>
 
-      <section className="container-custom py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => (
-            <Link key={article.id} href={`/articles/${article.slug}`}>
-              <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col">
-                {article.featured_image && (
-                  <img
-                    src={article.featured_image}
-                    alt={article.title}
-                    className="w-full h-48 object-cover"
-                  />
-                )}
-                <div className="p-4 flex-1 flex flex-col">
-                  <span className="text-xs font-semibold text-[#dc143c] uppercase mb-2">
-                    {article.category}
-                  </span>
-                  <h3 className="text-lg font-bold mb-2 line-clamp-2">{article.title}</h3>
-                  <p className="text-gray-600 text-sm line-clamp-3 flex-1">{article.excerpt}</p>
-                  <p className="text-xs text-gray-500 mt-4">
-                    {new Date(article.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {articles.length === 0 && (
+      <section className="container-custom py-16">
+        {articles.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-600">No articles found</p>
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <Link key={article.id} href={`/articles/${article.slug}`} className="group">
+                <div className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-all cursor-pointer h-full flex flex-col">
+                  {article.featured_image && (
+                    <div className="h-48 overflow-hidden bg-gray-100">
+                      <img
+                        src={article.featured_image}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    </div>
+                  )}
+                  <div className="p-5 flex-1 flex flex-col">
+                    <span className="text-xs font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 uppercase mb-2 tracking-wide">
+                      {article.category}
+                    </span>
+                    <h3 className="font-serif text-lg font-bold text-black mb-2 line-clamp-2 group-hover:text-purple-600 transition">{article.title}</h3>
+                    <p className="text-gray-600 text-sm font-light line-clamp-3 flex-1 mb-3">{article.excerpt}</p>
+                    <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500">
+                        {new Date(article.created_at).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-gray-600 font-medium">{article.sender_name}</p>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         )}
       </section>

@@ -1,3 +1,5 @@
+import { localApiCall } from '@/lib/local-db';
+
 const BACKEND_API = process.env.NEXT_PUBLIC_BACKEND_API || "http://localhost:8000";
 
 export function getBackendApiUrl() {
@@ -30,18 +32,29 @@ export async function apiCall(
     config.body = JSON.stringify(data);
   }
 
-  const response = await fetch(url, config);
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "API call failed");
-  }
+  try {
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
+      console.error(`API error at ${url}:`, error);
+      throw new Error(error.error || `HTTP ${response.status}`);
+    }
 
-  return response.json();
+    return response.json();
+  } catch (error: any) {
+    // Keep the app usable offline; localStorage is the development database.
+    console.warn(`Using local database for ${endpoint}:`, error.message);
+    return localApiCall(endpoint, method, data);
+  }
 }
 
 export async function fetchArticles(token?: string) {
   return apiCall("/api/articles", "GET", undefined, token);
+}
+
+export async function fetchMyArticles(token: string) {
+  return apiCall("/api/articles/mine", "GET", undefined, token);
 }
 
 export async function fetchArticleBySlug(slug: string, token?: string) {
@@ -60,19 +73,6 @@ export async function deleteArticle(id: string, token: string) {
   return apiCall(`/api/articles/${id}`, "DELETE", undefined, token);
 }
 
-export async function register(email: string, password: string, firstName?: string, lastName?: string) {
-  return apiCall("/api/auth/register", "POST", {
-    email,
-    password,
-    first_name: firstName,
-    last_name: lastName,
-  });
-}
-
-export async function login(email: string, password: string) {
-  return apiCall("/api/auth/login", "POST", { email, password });
-}
-
 export async function getCurrentUser(token: string) {
   return apiCall("/api/auth/me", "GET", undefined, token);
 }
@@ -81,8 +81,19 @@ export async function logout(token: string) {
   return apiCall("/api/auth/logout", "POST", {}, token);
 }
 
+export async function updateProfile(data: any, token: string) {
+  return apiCall("/api/auth/me", "PUT", data, token);
+}
+
+export async function fetchUsers(token: string) {
+  return apiCall("/api/auth/users", "GET", undefined, token);
+}
 export async function fetchPrayers(token?: string) {
   return apiCall("/api/prayers", "GET", undefined, token);
+}
+
+export async function fetchMyPrayers(token: string) {
+  return apiCall("/api/prayers/mine", "GET", undefined, token);
 }
 
 export async function createPrayer(data: any, token: string) {
@@ -91,6 +102,10 @@ export async function createPrayer(data: any, token: string) {
 
 export async function fetchMarketplace(token?: string) {
   return apiCall("/api/marketplace", "GET", undefined, token);
+}
+
+export async function fetchMyMarketplace(token: string) {
+  return apiCall("/api/marketplace/mine", "GET", undefined, token);
 }
 
 export async function createMarketplaceItem(data: any, token: string) {

@@ -9,6 +9,7 @@ A modern full-stack web application for a Christian women's community platform.
 - React 19.1.0
 - TypeScript 5.9.3
 - Tailwind CSS 3.4.3
+- Firebase (Authentication, Firestore, Cloud Storage)
 - Zustand (state management)
 - Axios (HTTP client)
 
@@ -16,9 +17,13 @@ A modern full-stack web application for a Christian women's community platform.
 - Node.js
 - Express 4.18.2
 - TypeScript 5.2.2
-- PostgreSQL
-- JWT Authentication
-- Bcrypt for password hashing
+- Firebase Admin SDK (Firestore, Authentication)
+- Firebase Cloud Functions (optional)
+
+### Database & Services
+- **Firebase Cloud Firestore** - NoSQL database
+- **Firebase Authentication** - User auth & management
+- **Firebase Cloud Storage** - Image & file storage
 
 ## Project Structure
 
@@ -55,8 +60,8 @@ godlywomenn/
 
 ### Prerequisites
 - Node.js 18+ 
-- PostgreSQL 12+
 - npm or yarn
+- Firebase project (free tier available at https://firebase.google.com)
 
 ### Installation
 
@@ -66,7 +71,12 @@ godlywomenn/
    cd godlywomenn
    ```
 
-2. **Install dependencies**
+2. **Create a Firebase Project**
+   - Go to [Firebase Console](https://console.firebase.google.com)
+   - Create a new project
+   - See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed instructions
+
+3. **Install dependencies**
    ```bash
    npm install
    npm run dev:frontend    # Frontend only
@@ -74,36 +84,41 @@ godlywomenn/
    npm run dev             # Both (with concurrently)
    ```
 
-3. **Setup Environment Variables**
+4. **Setup Environment Variables**
 
-   **Backend** - Create `backend/.env`:
+   **Backend** - Create `backend/.env` from `backend/.env.example`:
    ```env
    NODE_ENV=development
    PORT=8000
-   DATABASE_URL=postgresql://user:password@localhost:5432/godlywomenn
    JWT_SECRET=your-secret-key-change-in-production
    JWT_REFRESH_SECRET=your-refresh-secret-key-change-in-production
    FRONTEND_URL=http://localhost:3000
+   FIREBASE_SERVICE_ACCOUNT_KEY={your-firebase-service-account-json}
    ```
 
-   **Frontend** - Create `frontend/.env.local`:
-   ```env
+   **Frontend** - Create `frontend/.env.local` from `frontend/.env.local.example`:
+   NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
    NEXT_PUBLIC_BACKEND_API=http://localhost:8000
    ```
 
-4. **Setup PostgreSQL Database**
+5. **Start Development Servers**
    ```bash
-   createdb godlywomenn
+   npm run dev
    ```
 
-### Running the Application
+This starts both frontend (http://localhost:3000) and backend (http://localhost:8000).
+
+### Firebase Setup
+
+For detailed Firebase setup instructions (project creation, configuration, security rules):
+📖 See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md)
+
+## Running the Application
 
 **Development mode** (from project root):
 ```bash
 npm run dev
 ```
-
-This starts both frontend (http://localhost:3000) and backend (http://localhost:8000).
 
 **Production build**:
 ```bash

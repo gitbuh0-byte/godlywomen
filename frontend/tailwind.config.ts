@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#dc143c",
-        secondary: "#6B5B95",
-        accent: "#fdebd0",
+        primary: "#9f7aea",
+        secondary: "#ed64a6",
       },
       fontFamily: {
-        sans: ["var(--font-sans)"],
+        serif: ["'Playfair Display'", "serif"],
+        sans: ["'Inter'", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "sans-serif"],
       },
     },
   },

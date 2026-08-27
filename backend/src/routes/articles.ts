@@ -1,66 +1,105 @@
 import express, { Router, Request, Response } from 'express';
-import { authMiddleware } from '../config/auth.js';
-import { query } from '../config/database.js';
+import { authMiddleware } from '@/config/auth';
+import { db } from '@/config/database';
+import * as admin from 'firebase-admin';
 
 const router = Router();
 
 // Get all articles
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const result = await query(`
-      SELECT a.*, u.first_name, u.last_name 
-      FROM articles a 
-      LEFT JOIN users u ON a.author_id = u.id 
-      ORDER BY a.created_at DESC 
-      LIMIT 20
-    `);
-    res.json(result.rows);
+    const snapshot = await db.collection('articles')
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get();
+
+    const articles = snapshot.docs.map((doc: admin.firestore.DocumentSnapshot) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.json(articles);
   } catch (error) {
     console.error('Get articles error:', error);
     res.status(500).json({ error: 'Failed to get articles' });
   }
 });
 
-// Get article by slug
-router.get('/:slug', async (req: Request, res: Response) => {
+// Get my articles
+router.get('/mine', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const { slug } = req.params;
-    const result = await query(`
-      SELECT a.*, u.first_name, u.last_name 
-      FROM articles a 
-      LEFT JOIN users u ON a.author_id = u.id 
-      WHERE a.slug = $1
-    `, [slug]);
+    const userId = (req as any).user.uid;
+    const snapshot = await db.collection('articles')
+      .where('authorId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .get();
 
-    if (result.rows.length === 0) {
+    const articles = snapshot.docs.map((doc: admin.firestore.DocumentSnapshot) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.json(articles);
+  } catch (error) {
+    console.error('Get my articles error:', error);
+    res.status(500).json({ error: 'Failed to get your articles' });
+  }
+});
+
+// Get article by ID
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const doc = await db.collection('articles').doc(id).get();
+
+    if (!doc.exists) {
       return res.status(404).json({ error: 'Article not found' });
     }
 
-    res.json(result.rows[0]);
+    // Increment views
+    await doc.ref.update({ views: (doc.data()?.views || 0) + 1 });
+
+    res.json({ id: doc.id, ...doc.data() });
   } catch (error) {
     console.error('Get article error:', error);
     res.status(500).json({ error: 'Failed to get article' });
   }
 });
-
 // Create article
 router.post('/', authMiddleware, async (req: Request, res: Response) => {
   try {
-    const { title, slug, excerpt, content, featured_image, category } = req.body;
-    const userId = (req as any).user.id;
+    const { title, slug, excerpt, content, featuredImage, category } = req.body;
+    const userId = (req as any).user.uid;
 
     if (!title || !slug || !content) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const result = await query(
-      `INSERT INTO articles (title, slug, excerpt, content, featured_image, category, author_id, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING *`,
-      [title, slug, excerpt, content, featured_image, category, userId, 'published']
-    );
+    const articleRef = db.collection('articles').doc();
+    await articleRef.set({
+      title,
+      slug,
+      excerpt: excerpt || '',
+      content,
+      featuredImage: featuredImage || '',
+      category: category || '',
+      authorId: userId,
+      status: 'published',
+      views: 0,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      id: articleRef.id,
+      title,
+      slug,
+      excerpt,
+      content,
+      featuredImage,
+      category,
+      authorId: userId,
+    });
   } catch (error) {
     console.error('Create article error:', error);
     res.status(500).json({ error: 'Failed to create article' });
@@ -71,27 +110,30 @@ router.post('/', authMiddleware, async (req: Request, res: Response) => {
 router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { title, content, excerpt, featured_image, category, status } = req.body;
-    const userId = (req as any).user.id;
+    const { title, content, excerpt, featuredImage, category, status } = req.body;
+    const userId = (req as any).user.uid;
 
-    // Check ownership
-    const articleResult = await query('SELECT author_id FROM articles WHERE id = $1', [id]);
-    if (articleResult.rows.length === 0) {
+    const doc = await db.collection('articles').doc(id).get();
+    if (!doc.exists) {
       return res.status(404).json({ error: 'Article not found' });
     }
 
-    if (articleResult.rows[0].author_id !== userId) {
+    // Check ownership
+    if (doc.data()?.authorId !== userId) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    const result = await query(
-      `UPDATE articles SET title = $1, content = $2, excerpt = $3, featured_image = $4, category = $5, status = $6, updated_at = NOW()
-       WHERE id = $7
-       RETURNING *`,
-      [title, content, excerpt, featured_image, category, status, id]
-    );
+    await doc.ref.update({
+      title: title || doc.data()?.title,
+      content: content || doc.data()?.content,
+      excerpt: excerpt || doc.data()?.excerpt,
+      featuredImage: featuredImage || doc.data()?.featuredImage,
+      category: category || doc.data()?.category,
+      status: status || doc.data()?.status,
+      updatedAt: new Date().toISOString(),
+    });
 
-    res.json(result.rows[0]);
+    res.json({ id, ...doc.data() });
   } catch (error) {
     console.error('Update article error:', error);
     res.status(500).json({ error: 'Failed to update article' });
@@ -102,19 +144,19 @@ router.put('/:id', authMiddleware, async (req: Request, res: Response) => {
 router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const userId = (req as any).user.id;
+    const userId = (req as any).user.uid;
 
-    // Check ownership
-    const articleResult = await query('SELECT author_id FROM articles WHERE id = $1', [id]);
-    if (articleResult.rows.length === 0) {
+    const doc = await db.collection('articles').doc(id).get();
+    if (!doc.exists) {
       return res.status(404).json({ error: 'Article not found' });
     }
 
-    if (articleResult.rows[0].author_id !== userId) {
+    // Check ownership
+    if (doc.data()?.authorId !== userId) {
       return res.status(403).json({ error: 'Unauthorized' });
     }
 
-    await query('DELETE FROM articles WHERE id = $1', [id]);
+    await doc.ref.delete();
     res.json({ message: 'Article deleted' });
   } catch (error) {
     console.error('Delete article error:', error);

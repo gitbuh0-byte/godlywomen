@@ -45,9 +45,9 @@ export default function ArticleDetailPage() {
   if (!article) return <div className="text-center py-20">Article not found</div>;
 
   return (
-    <main className="flex-1">
+    <main className="flex-1 bg-white">
       {article.featured_image && (
-        <div className="relative w-full h-96 overflow-hidden">
+        <div className="relative w-full h-96 overflow-hidden bg-gray-100">
           <img
             src={article.featured_image}
             alt={article.title}
@@ -56,23 +56,28 @@ export default function ArticleDetailPage() {
         </div>
       )}
 
-      <article className="max-w-2xl mx-auto px-4 py-12">
+      <article className="max-w-3xl mx-auto px-6 py-12\">
         <div className="mb-8">
-          <span className="text-sm font-semibold text-[#dc143c] uppercase">
+          <span className="text-xs font-semibold text-purple-600 uppercase tracking-wide">
             {article.category}
           </span>
-          <h1 className="text-4xl font-bold my-4">{article.title}</h1>
-          <p className="text-gray-600">
-            {new Date(article.created_at).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
+          <h1 className="font-serif text-5xl font-bold my-6 text-black leading-tight">{article.title}</h1>
+          <div className="flex items-center justify-between pt-4 border-b border-gray-200 pb-4">
+            <div>
+              <p className="text-gray-600 font-medium">{article.sender_name}</p>
+              <p className="text-gray-500 text-sm">
+                {new Date(article.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div
-          className="prose prose-lg max-w-none"
+          className="prose prose-lg max-w-none font-light text-gray-700 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
       </article>

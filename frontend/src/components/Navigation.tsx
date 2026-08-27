@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useAuthStore } from '@/store/auth';
 import { useState } from 'react';
+import { Menu, X, Heart } from 'lucide-react';
 
 export function Navigation() {
   const { user, logout } = useAuthStore();
@@ -10,89 +11,105 @@ export function Navigation() {
 
   const handleLogout = () => {
     logout();
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
   };
 
   return (
-    <nav className="bg-white shadow-md">
-      <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-[#dc143c]">
-          Godly Women
+    <nav className="sticky top-0 z-50 border-b border-[#eadfe4] bg-[#fffdfb]/95 backdrop-blur">
+      <div className="container-custom flex h-[72px] items-center justify-between">
+        <Link href="/" className="font-serif text-xl font-bold tracking-tight text-[#211c22]">
+          G<span className="text-[#ec174b]">♥</span>RERA
         </Link>
 
-        <div className="hidden md:flex space-x-6 items-center">
-          <Link href="/articles" className="hover:text-[#dc143c] transition">
-            Articles
+        <div className="hidden items-center gap-7 md:flex">
+          {user && (
+            <Link href="/dashboard" className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]">
+              Dashboard
+            </Link>
+          )}
+          <Link href="/articles" className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]">
+            Explore
           </Link>
-          <Link href="/marketplace" className="hover:text-[#dc143c] transition">
+          <Link href="/marketplace" className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]">
             Marketplace
           </Link>
-          <Link href="/prayers" className="hover:text-[#dc143c] transition">
-            Prayers
+          <Link href="/prayers" className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]">
+            Community
           </Link>
+          {user && (
+            <Link href="/messages" className="text-gray-700 hover:text-black transition text-sm">
+              Chat
+            </Link>
+          )}
+          <Link href="/about" className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]">About</Link>
+          <Link href="/prayers" aria-label="Saved profiles" className="text-[#ec174b]"><Heart size={17} /></Link>
 
           {user ? (
             <div className="flex items-center space-x-4">
-              <span className="text-gray-600">{user.first_name}</span>
+              <span className="text-xs text-[#514a52]">{user.displayName}</span>
               <button
                 onClick={handleLogout}
-                className="bg-[#dc143c] text-white px-4 py-2 rounded hover:bg-[#b50930]"
+                className="pink-button"
               >
                 Logout
               </button>
             </div>
           ) : (
-            <div className="space-x-2">
+            <div className="space-x-3 flex items-center">
               <Link
                 href="/auth/login"
-                className="text-[#dc143c] hover:underline"
+                className="text-xs font-semibold text-[#514a52] transition hover:text-[#ec174b]"
               >
                 Login
               </Link>
               <Link
                 href="/auth/register"
-                className="bg-[#dc143c] text-white px-4 py-2 rounded hover:bg-[#b50930]"
+                className="pink-button"
               >
-                Register
+                Get started
               </Link>
             </div>
           )}
         </div>
 
         <button
-          className="md:hidden bg-[#dc143c] text-white px-4 py-2 rounded"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="text-[#211c22] md:hidden"
+          onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu"
         >
-          Menu
+          {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden bg-gray-100 py-4 px-4 space-y-2">
-          <Link href="/articles" className="block hover:text-[#dc143c]">
-            Articles
+        <div className="space-y-3 border-t border-[#eadfe4] bg-[#fffdfb] px-5 py-4 md:hidden">
+          <Link href="/articles" className="block text-gray-700 hover:text-black text-sm">
+            Stories
           </Link>
-          <Link href="/marketplace" className="block hover:text-[#dc143c]">
+          <Link href="/marketplace" className="block text-gray-700 hover:text-black text-sm">
             Marketplace
           </Link>
-          <Link href="/prayers" className="block hover:text-[#dc143c]">
+          <Link href="/prayers" className="block text-gray-700 hover:text-black text-sm">
             Prayers
+          </Link>
+          <Link href="/contact" className="block text-gray-700 hover:text-black text-sm">
+            Contact
+          </Link>
+          <Link href="/newsletter" className="block text-gray-700 hover:text-black text-sm">
+            Newsletter
           </Link>
           {user ? (
             <button
               onClick={handleLogout}
-              className="w-full text-left text-[#dc143c] hover:underline"
+              className="w-full text-left text-gray-700 hover:text-black text-sm"
             >
               Logout
             </button>
           ) : (
-            <div className="space-y-2">
-              <Link href="/auth/login" className="block text-[#dc143c]">
+            <div className="space-y-2 pt-2">
+              <Link href="/auth/login" className="block text-gray-700 text-sm">
                 Login
               </Link>
-              <Link href="/auth/register" className="block bg-[#dc143c] text-white px-4 py-2 rounded text-center">
-                Register
+              <Link href="/auth/register" className="block bg-black text-white px-4 py-2 rounded-full text-sm font-medium text-center">
+                Get started
               </Link>
             </div>
           )}
